@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aim - Lightning Squadron</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <span class="logo">LS</span>
+                <div>
+                    <p class="eyebrow">Lightning Squadron</p>
+                    <h1>Aim Training</h1>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-list">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="guide.html">Guide</a></li>
+                    <li><a href="aim.html">Aim</a></li>
+                    <li><a href="clanning.html">Clanning</a></li>
+                    <li><a href="ressources.html">Ressources</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="section section-alt">
+            <div class="container">
+                <h2>Améliore ton aim</h2>
+                <p>Aim est une compétence qui se développe avec l'aimtraining ou simplement en jouant. Pour l'instant, on parle d'aimtraining : entraînement ciblé sur le tracking, le flick, le switch de cible, etc.</p>
+                <p>La majorité des gun fights Roblox reposent sur le tracking et le target switching. Concentre-toi surtout sur ces deux points pendant l'aimtraining.</p>
+                <div class="action-group">
+                    <button class="btn btn-secondary" id="toggle-aim-tips">Voir les astuces d'aim</button>
+                    <a class="btn btn-secondary" href="ressources.html">Voir les ressources</a>
+                </div>
+                <div id="aim-tips" class="info-panel hidden">
+                    <p>Focus sur le tracking et le target switching, les deux éléments majeurs des affrontements Roblox. Ta souris doit être stable, ta sensibilité adaptée, et tu dois rester relax pour réagir plus vite.</p>
+                </div>
+                <ul class="feature-list">
+                    <li>écran 144Hz+</li>
+                    <li>bon tapis de souris comme Logitech G640</li>
+                    <li>bonne souris</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Best Practice Games</h2>
+                <div class="best-practice-grid">
+                    <article class="card">
+                        <h3>Futuretops</h3>
+                        <p class="card-copy">Excellent pour sparring, repositioning et fights intenses.</p>
+                        <a class="btn btn-secondary" href="https://www.roblox.com/games/5169051062/Futuretops-Rework" target="_blank">Ouvrir Futuretops</a>
+                    </article>
+                    <article class="card">
+                        <h3>Outworlds</h3>
+                        <p class="card-copy">Idéal pour les 1v1s et les duels serrés.</p>
+                        <a class="btn btn-secondary" href="https://www.roblox.com/games/5998406485/Outworld-1v1-Sparring-Arena" target="_blank">Ouvrir Outworlds</a>
+                    </article>
+                    <article class="card">
+                        <h3>Trixtops</h3>
+                        <p class="card-copy">Bon pour travailler les angles et les réactions rapides.</p>
+                        <a class="btn btn-secondary" href="https://www.roblox.com/games/4767538171/trixtops" target="_blank">Ouvrir Trixtops</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-alt">
+            <div class="container">
+                <h2>Test de précision</h2>
+                <div class="precision-card">
+                    <div class="precision-info">
+                        <button class="btn" id="start-test-btn">Démarrer le test</button>
+                        <div class="precision-stats">
+                            <span id="precision-timer">10s</span>
+                            <span id="precision-hits">Hits: 0</span>
+                            <span id="precision-clicks">Clics: 0</span>
+                            <span id="precision-accuracy">Précision: 0%</span>
+                        </div>
+                    </div>
+                    <div class="precision-board" id="precision-board">
+                        <div class="target hidden" id="precision-target"></div>
+                    </div>
+                    <p class="precision-note">Clique sur la cible dès qu'elle apparaît. Le test dure 10 secondes. Plus tu cliques vite et précis, meilleur est ton score.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.querySelector('#toggle-aim-tips')?.addEventListener('click', () => {
+            const panel = document.getElementById('aim-tips');
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+        });
+
+        const startBtn = document.getElementById('start-test-btn');
+        const target = document.getElementById('precision-target');
+        const board = document.getElementById('precision-board');
+        const timerEl = document.getElementById('precision-timer');
+        const hitsEl = document.getElementById('precision-hits');
+        const clicksEl = document.getElementById('precision-clicks');
+        const accuracyEl = document.getElementById('precision-accuracy');
+
+        let testInterval;
+        let timeLeft = 10;
+        let hits = 0;
+        let clicks = 0;
+        let testActive = false;
+
+        function updateStats() {
+            timerEl.textContent = `${timeLeft}s`;
+            hitsEl.textContent = `Hits: ${hits}`;
+            clicksEl.textContent = `Clics: ${clicks}`;
+            const accuracy = clicks > 0 ? Math.round((hits / clicks) * 100) : 0;
+            accuracyEl.textContent = `Précision: ${accuracy}%`;
+        }
+
+        function moveTarget() {
+            const boardRect = board.getBoundingClientRect();
+            const size = 50;
+            const left = Math.random() * (boardRect.width - size);
+            const top = Math.random() * (boardRect.height - size);
+            target.style.left = `${left}px`;
+            target.style.top = `${top}px`;
+        }
+
+        function endTest() {
+            testActive = false;
+            clearInterval(testInterval);
+            target.classList.add('hidden');
+            startBtn.textContent = 'Redémarrer le test';
+        }
+
+        board?.addEventListener('click', event => {
+            if (!testActive) return;
+            clicks += 1;
+            if (event.target === target) {
+                hits += 1;
+                moveTarget();
+            }
+            updateStats();
+        });
+
+        startBtn?.addEventListener('click', () => {
+            if (testActive) return;
+            hits = 0;
+            clicks = 0;
+            timeLeft = 10;
+            testActive = true;
+            target.classList.remove('hidden');
+            moveTarget();
+            updateStats();
+            startBtn.textContent = 'En cours...';
+            testInterval = setInterval(() => {
+                timeLeft -= 1;
+                updateStats();
+                if (timeLeft <= 0) {
+                    endTest();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
